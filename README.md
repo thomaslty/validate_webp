@@ -5,6 +5,7 @@ This Python script scans through CBZ files in a directory (and its subdirectorie
 ## Features
 
 - Recursively scans all .cbz files in the specified directory
+- Parallel processing for improved performance
 - Checks WebP files for corruption without extracting them to disk
 - Generates a report of corrupted files
 - Memory-efficient processing
