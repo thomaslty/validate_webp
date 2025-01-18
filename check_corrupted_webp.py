@@ -52,11 +52,20 @@ def scan_cbz_files(root_path: str) -> List[str]:
     # Find all .cbz files recursively
     cbz_files = list(root_path.rglob('*.cbz'))
     
-    # Calculate optimal number of processes
-    num_processes = min(cpu_count(), len(cbz_files))
-    
     if not cbz_files:
         return []
+
+    # Calculate batch size based on file descriptor limits
+    # Assuming each process might need ~3 file descriptors (for safety)
+    try:
+        import resource
+        soft_limit, hard_limit = resource.getrlimit(resource.RLIMIT_NOFILE)
+        max_safe_processes = (soft_limit) // 3  # Leave some file descriptors for other operations
+    except ImportError:
+        # Windows doesn't have resource module
+        max_safe_processes = 500  # Conservative default
+
+    num_processes = min(max_safe_processes, len(cbz_files))
     
     print(f"Found {len(cbz_files)} CBZ files. Processing with {num_processes} processes...")
     
